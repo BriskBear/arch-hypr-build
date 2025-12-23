@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-. lib/crypt
+. lib/crypt.sh
 . lib/locale.sh
 . lib/password.sh
 . lib/prompt_util.sh
