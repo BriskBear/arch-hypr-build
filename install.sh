@@ -69,7 +69,9 @@ genfstab -U -p /mnt > /mnt/etc/fstab
 timedatectl set-ntp true  # Ensure NTP
 
 # Add decrypt boot hooks
-sed -i '/HOOKS=/s/)/ encrypt lvm2)/g' /mnt/etc/mkinitcpio.conf
+# sed -i '/HOOKS=/s/)/ encrypt lvm2)/g' /mnt/etc/mkinitcpio.conf
+BOOT_HOOKS=`cat ref/hooks.list`
+sed -ie "/^HOOKS=/s/HOOKS=.*/$BOOT_HOOKS/g" /mnt/etc/mkinitcpio.conf
 
 # Initialize systemd-boot
 arch-chroot /mnt systemd-machine-id-setup
