@@ -18,7 +18,7 @@ function setup-locale() {
   echo "LANG=en_US.UTF-8"        >> "$locale"
   echo "LC_ALL=\"en_US.UTF-8\""  >> "$locale"
   echo "LC_MESSAGES=en_US.UTF-8" >> "$locale"
-  echo "KEYMAP=default" >> /mnt/etc/vconsole.conf
+  echo "KEYMAP=us" >> /mnt/etc/vconsole.conf
 
   arch-chroot /mnt locale-gen
 }
