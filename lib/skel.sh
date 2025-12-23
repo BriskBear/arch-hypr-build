@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 function prep-skel() {
-  local FILES=(.bashrc .local/etc/profile .local/etc/profile.d/environment.sh)
+  local FILES=(.bashrc .local/etc/profile .local/etc/profile.d/environment.sh .local/etc/xdg/hypr/hyprland.conf .local/etc/xdg/hypr/hyprpaper.conf)
 
   cp -r ~/.local /mnt/etc/skel/
   sed -i "s/--i-am-really-stupid//g" ~/.bashrc >> /mnt/etc/skel/.bashrc
