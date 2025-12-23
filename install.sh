@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-. lib/crypt.sh
+. lib/crypt
 . lib/locale.sh
 . lib/password.sh
 . lib/prompt_util.sh
@@ -67,10 +67,10 @@ setup-hostname "$NEW_HOST"
 setup-locale
 
 # Prepare /etc/skel - new user default directories
-echo 'export XDG_CONFIG_HOME=/home/$USER/.local/etc/xdg' >> /mnt/etc/environment
 cp -r ~/.local /mnt/etc/skel/
+sed -i "s/--i-am-really-stupid//g" ~/.bashrc >> /mnt/etc/skel/.bashrc
 cp ~/.bashrc /mnt/etc/skel/
-ln -s .bashrc /mnt/etc/skel/.bash_profile
+ln -sf .bashrc /mnt/etc/skel/.bash_profile
 cp /usr/local/bin/st /mnt/usr/local/bin/
 
 restore-cursor
