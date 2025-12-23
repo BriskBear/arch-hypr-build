@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-. prompt_util.sh
+. lib/prompt_util.sh
 
 function set-password() {
   local user="$1"
