@@ -1,8 +1,9 @@
 #!/usr/bin/env bash
 
-. lib/prompt_util.sh
+. lib/crypt.sh
 . lib/locale.sh
 . lib/password.sh
+. lib/prompt_util.sh
 . lib/sanitize.sh
 . lib/select_disk.sh
 
