@@ -13,6 +13,7 @@ EFI_SIZE=
 NEW_HOST=
 WHEEL_USER=
 
+clear
 save-cursor
 
 # Set DISK_TARGET
