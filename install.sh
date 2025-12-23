@@ -6,6 +6,7 @@
 . lib/prompt_util.sh
 . lib/sanitize.sh
 . lib/select_disk.sh
+. lib/skel.sh
 
 BOOT_HOOKS=`cat ref/hooks.list`
 DISK_TARGET=
@@ -13,7 +14,6 @@ EFI_SIZE=
 NEW_HOST=
 WHEEL_USER=
 
-clear
 save-cursor
 
 # Set DISK_TARGET
@@ -68,11 +68,7 @@ setup-hostname "$NEW_HOST"
 setup-locale
 
 # Prepare /etc/skel - new user default directories
-cp -r ~/.local /mnt/etc/skel/
-sed -i "s/--i-am-really-stupid//g" ~/.bashrc >> /mnt/etc/skel/.bashrc
-cp ~/.bashrc /mnt/etc/skel/
-ln -sf .bashrc /mnt/etc/skel/.bash_profile
-cp /usr/local/bin/st /mnt/usr/local/bin/
+prep-skel
 
 restore-cursor
 printf "\e[1mArchlinuxInstalled:\e[0m \e[38;5;208m${DISK_TARGET}2\e[0m\n"
@@ -93,6 +89,7 @@ save-cursor
 
 # Create wheel-user
 arch-chroot /mnt useradd -m -g users -G adm,audio,network,video,wheel $WHEEL_USER
+ln -sf /home/${WHEEL_USER}/.local/lib/zen/zen /home/${WHEEL_USER}/.local/bin/zen
 
 # Set wheel-user's password
 set-password $WHEEL_USER
