@@ -1,10 +1,12 @@
 #!/usr/bin/env bash
 
-. lib/locale.sh
 . lib/prompt_util.sh
+. lib/locale.sh
+. lib/password.sh
 . lib/sanitize.sh
 . lib/select_disk.sh
 
+BOOT_HOOKS=`cat ref/hooks.list`
 DISK_TARGET=
 EFI_SIZE=
 NEW_HOST=
@@ -34,29 +36,7 @@ printf "\e[1mNewHostname:\e[0m \e[38;5;208m$NEW_HOST\e[0m\n"
 save-cursor
 
 ## Format the disk and setup disk encryption ##
-# TODO: Expand to allow extended partitions
-command=`sed -e s/EFISIZE/$EFI_SIZE/g -e s/PRIMARY/+/g ref/sfdisk`
-echo -e "$command" | sfdisk $DISK_TARGET
-
-# Set the encryption password and encrypt volume
-cryptsetup --use-random luksFormat ${DISK_TARGET}2
-cryptsetup open ${DISK_TARGET}2 rute
-
-# Create+Map luks volume
-pvcreate /dev/mapper/rute
-vgcreate vg0 /dev/mapper/rute
-
-# Create root partition in luksvolume
-lvcreate -l '100%FREE' vg0 -n ROOT
-
-# Format BOOT and '/' partitions
-mkfs.fat -F 32 -n 'BOOT' ${DISK_TARGET}1
-mkfs.btrfs -L \/ /dev/vg0/ROOT
-
-# Mount the Target Partitions
-mount /dev/vg0/ROOT /mnt
-mkdir /mnt/boot
-mount -L BOOT /mnt/boot
+crypt-setup $EFI_SIZE $DISK_TARGET
 
 ## Install linux image ##
 # Install archlinux to /mnt with the packages in ref/packages
@@ -69,8 +49,6 @@ genfstab -U -p /mnt > /mnt/etc/fstab
 timedatectl set-ntp true  # Ensure NTP
 
 # Add decrypt boot hooks
-# sed -i '/HOOKS=/s/)/ encrypt lvm2)/g' /mnt/etc/mkinitcpio.conf
-BOOT_HOOKS=`cat ref/hooks.list`
 sed -ie "/^HOOKS=/s/HOOKS=.*/$BOOT_HOOKS/g" /mnt/etc/mkinitcpio.conf
 
 # Initialize systemd-boot
@@ -84,16 +62,18 @@ cp -v ref/loader.conf /mnt/boot/loader/
 setup-hostname "$NEW_HOST"
 setup-locale
 
+# Prepare /etc/skel - new user default directories
+echo 'export XDG_CONFIG_HOME=/home/$USER/.local/etc/xdg' >> /mnt/etc/environment
+cp -r ~/.local /mnt/etc/skel/
+cp ~/.bashrc /mnt/etc/skel/
+ln -s .bashrc /mnt/etc/skel/.bash_profile
+cp /usr/local/bin/st /mnt/usr/local/bin/
+
 # Allow wheel nopasswd
 sed -i '/NOPASSWD/s/# //g' /mnt/etc/sudoers
 
 # Set root password
-restore-cursor
-printf "Please set a root password.\n"
-arch-chroot /mnt passwd
-restore-cursor
-printf "\e[1mPasswordSet:\e[0m \e[38;5;208mroot\e[0m\n"
-save-cursor
+set-password root
 
 # Optionally customize wheel-user name
 default "Name wheel-user?" dev
@@ -106,8 +86,7 @@ save-cursor
 arch-chroot /mnt useradd -m -g users -G adm,audio,network,video,wheel $WHEEL_USER
 
 # Set wheel-user's password
-printf "Please set ${WHEEL_USER}'s password.\n"
-arch-chroot /mnt passwd $WHEEL_USER
-restore-cursor
-printf "\e[1mPasswordSet:\e[0m \e[38;5;208m$WHEEL_USER\e[0m\n"
-save-cursor
+set-password $WHEEL_USER
+
+# Re-initialize mkinitcpio
+arch-chroot /mnt mkinitcpio -P
