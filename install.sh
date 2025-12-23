@@ -37,6 +37,9 @@ save-cursor
 
 ## Format the disk and setup disk encryption ##
 crypt-setup $EFI_SIZE $DISK_TARGET
+restore-cursor
+printf "\e[1mDriveEncryptionSet:\e[0m \e[38;5;208m${DISK_TARGET}2\e[0m\n"
+save-cursor
 
 ## Install linux image ##
 # Install archlinux to /mnt with the packages in ref/packages
@@ -68,6 +71,10 @@ cp -r ~/.local /mnt/etc/skel/
 cp ~/.bashrc /mnt/etc/skel/
 ln -s .bashrc /mnt/etc/skel/.bash_profile
 cp /usr/local/bin/st /mnt/usr/local/bin/
+
+restore-cursor
+printf "\e[1mArchlinuxInstalled:\e[0m \e[38;5;208m${DISK_TARGET}2\e[0m\n"
+save-cursor
 
 # Allow wheel nopasswd
 sed -i '/NOPASSWD/s/# //g' /mnt/etc/sudoers

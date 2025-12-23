@@ -3,7 +3,7 @@
 . prompt_util.sh
 
 function set-password() {
-  local user
+  local user="$1"
 
   restore-cursor
   printf "Please set ${user}'s password.\n"
