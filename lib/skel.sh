@@ -17,9 +17,8 @@ function prep-skel() {
 }
 
 function replace-root() {
-  local file
+  local file="$1"
   local lead="/mnt/etc/skel"
-  printf "\e[1mFixing:\e[0m ${lead}/${file}\n"
 
   sed -i 's|/root|$HOME|g' "${lead}/${file}"
 }
