@@ -107,7 +107,7 @@ arch-chroot /mnt useradd -m -g users -G adm,audio,network,video,wheel $WHEEL_USE
 
 # Set wheel-user's password
 printf "Please set ${WHEEL_USER}'s password.\n"
-arch-chroot /mnt $WHEEL_USER
+arch-chroot /mnt passwd $WHEEL_USER
 restore-cursor
 printf "\e[1mPasswordSet:\e[0m \e[38;5;208m$WHEEL_USER\e[0m\n"
 save-cursor
