@@ -70,6 +70,9 @@ setup-locale
 # Prepare /etc/skel - new user default directories
 prep-skel
 
+cp -r /usr/share/fonts/briskbear /mnt/usr/share/fonts/
+cp -r /usr/share/fonts/TTF       /mnt/usr/share/fonts/
+
 restore-cursor
 printf "\e[1mArchlinuxInstalled:\e[0m \e[38;5;208m${DISK_TARGET}2\e[0m\n"
 save-cursor
